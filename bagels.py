@@ -25,22 +25,51 @@ def get_secretNum():
         secretNum += str(numbers[i])
     return secretNum
 
-def find_out(guess):
-    if len(guess) != 3:
-        sys.exit('invalid guess, must be 3 digits')
-    answer = f'{random.randrange(1, 10**3):03}'
-    list_ans = list(answer)
-    list_guess = list(guess)   
+def getClues(guess, secretNum):
+    if guess == secretNum:
+        return 'you got it!'
 
-    print(list_ans, list_guess)
-    for i in list_guess:
-        if i in list_ans:
-            print('got it')
-guess = input('enter a 3 digit guess: ')
-find_out(guess)
+    clues = []
+
+    for i in range(len(guess)):
+        if guess[i] == secretNum[i]:
+            # a correct digit is in the correct place
+            clues.append('Fermi')
+        elif guess[i] in secretNum:
+            # a correct digit is in the incorect place
+            clues.append('Pico')
+    if len(clues) == 0:
+        return 'Bagels' # there is no correct digits at all
+    else:
+        # sort the clues in alphabetcal order so doesn't give info away
+        clues.sort()
+        return ' '.join(clues)
 
 def main():
+    while True:
+        secretNum = get_secretNum()
+        print(f'You have {MAX_GUESSES} guesses to get it')
 
+        numGuesses = 1
+        while numGuesses <= MAX_GUESSES:
+            guess = ''
+            while len(guess) != NUM_DIGITS or not guess.isdecimal():
+                print(f'Guess #{numGuesses}')
+                guess = input('> ')
+
+            clues = getClues(guess, secretNum)
+            print(clues)
+            numGuesses += 1
+
+            if guess == secretNum:
+                break   # they're correct so break out of loop
+            if numGuesses > MAX_GUESSES:
+                print('you ran out of guesses')
+                print(f'the answer was {secretNum}')
+
+        print('do you want to play again?')
+        if not input('> ').lower().startswith('y'):
+            break
 
 if __name__ == '__main__':
     main()
